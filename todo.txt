@@ -1,0 +1,16 @@
+Frontend:
+	. Guest Area 							: Publicly accessable
+			/
+			/authenticate
+				. step-1 : Phone number
+				. step-2 : OTP 
+
+	. Semi-Protected Area 		: User logedIn but not complete by OTP verification
+			/active
+				. step-1 : Fullname
+				. step-2 : avatar 
+
+	. Protected Area 					:	Protected routes
+			/profile
+			/rooms
+			/rooms/1

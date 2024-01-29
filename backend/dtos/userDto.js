@@ -1,3 +1,5 @@
+const { filterObjectByArray } = require('../utils')
+
 /* DTO = Data Transfer Object
 	- To modify or alter any property of an object before send to client.
 
@@ -24,3 +26,7 @@
 				}
 
 */
+exports.filterUser = (user) => {
+	const allowedFields = ['_id', 'phone', 'isAuth', 'isActive', 'name', 'avatar', 'createdAt']
+	return filterObjectByArray(user._doc, allowedFields)
+}

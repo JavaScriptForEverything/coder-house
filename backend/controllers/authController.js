@@ -3,10 +3,25 @@ const otpService = require('../services/otpService')
 const hashService = require('../services/hashService')
 const userService = require('../services/userService')
 const tokenService = require('../services/tokenService')
-const { filterObjectByArray } = require('../utils')
+const fileService = require('../services/fileService')
+const userDto = require('../dtos/userDto')
 
+exports.auth = catchAsync(async (req, res, next) => {
+	const { accessToken } = req.cookies
 
-// POST 	/api/send-otp 
+	const token = await tokenService.verifyAccessToken(accessToken)
+	if(!token) return next(appError('accessToken verification failed', 401, 'TokenError'))
+	
+	const userId = token._id
+	const user = await userService.findUserById(userId)
+	if(!user) return next(appError('user not found', 401, 'TokenError'))
+
+	req.user = user
+	
+	next()
+})
+
+// POST 	/api/auth/send-otp 
 /* We can store hashed otp in database:
 		. store into database is reduce complexity
 		. send user both otp and hashedOTP + expires date  + phone number: when need to varify get from user again.
@@ -47,7 +62,7 @@ exports.sendOTP = catchAsync( async(req, res, next) => {
 })
 
 
-// POST 	/api/verify-otp 
+// POST 	/api/auth/verify-otp 
 exports.verifyOTP = catchAsync( async (req, res, next) => {
 	const { phone, otp, hash } = req.body
 
@@ -95,71 +110,33 @@ exports.verifyOTP = catchAsync( async (req, res, next) => {
 		httpOnly: true
 	})
 
-	const allowedFields = ['_id', 'phone', 'isAuth', 'isActive', 'name', 'avatar', 'createdAt']
-	const filteredUser = filterObjectByArray(user._doc, allowedFields)
-
 	res.status(200).json({
 		status: 'success',
 		data: {
 			message: 'your registration is success',
 			isAuth: true, 														// To indicate client that auth success
-			user: filteredUser
+			user: userDto.filterUser(user)
 		},
 	})
 })
 
+// POST 	/api/auth/active-user + auth
+exports.activeUser = catchAsync(async (req, res, next) => {
+	const { name, avatar } = req.body
+	if(!name || !avatar) return next(appError('missing fields: [name,avatar]'))
 
-// // PATCH 	/api/active-user
-// exports.activeUser = catchAsync( async (req, res, next) => {
-// 	const { name } = req.body
+	const userId = req.user._id
 
-// 	if(!name) return next(appError('you must send: { name }'))
+	const { error, url } = await fileService.handleBase64File(avatar)
+	if(error) return next(appError(error))
 
-// 	// step-1: check expires
-// 	let user = await userService.findUser({ phone })
+	const user = userService.activeUser(userId, { name, avatar: url })
 
-// 	// const isValidHashed = expires > Date.now()
-// 	// if(!isValidHashed) return next(appError('your OTP expires, please collect new OTP'))
+	res.status(201).json({
+		status: 'success', 
+		data: {
+			user: userDto.filterUser(user)
+		}
+	})
+})
 
-// 	// // step-2: check hashed hash
-// 	// const data = `${phone}.${otp}.${expires}` 			// get the same pattern from send otp
-// 	// const isValid = await hashService.validateOTP(data, hashedOTP)
-// 	// if(!isValid) return next(appError('hashed otp violated'))
-
-// 	// // step-3: Create user
-
-// 	// // step-4: Generate token
-// 	// const payload = {
-// 	// 	_id: user._id,
-// 	// 	phone: user.phone,
-// 	// 	isActive: user.isActive,
-// 	// }
-// 	// const { accessToken, refreshToken } = await tokenService.generateTokens(payload)
-
-
-// 	// // step-5: 
-// 	// const storedRefreshToken = await tokenService.storeRefreshToken(refreshToken, user._id)
-// 	// if(!storedRefreshToken) return next(appError('string refreshToken failed'))
-
-// 	// // step-6: Store both token into cookie which is HTTPS only : To prevent any XSS attach
-// 	// res.cookie('accessToken', accessToken, {
-// 	// 	maxAge: 1000 * 60 * 60 * 24 * 30, 				// expres require new Date(), but maxAge just value
-// 	// 	httpOnly: true
-// 	// })
-// 	// res.cookie('refreshToken', refreshToken, {
-// 	// 	maxAge: 1000 * 60 * 60 * 24 * 30,
-// 	// 	httpOnly: true
-// 	// })
-
-// 	const allowedFields = ['_id', 'phone', 'isAuth', 'isActive', 'createdAt']
-// 	const filteredUser = filterObjectByArray(user._doc, allowedFields)
-
-// 	res.status(200).json({
-// 		status: 'success',
-// 		data: {
-// 			message: 'your registration is success',
-// 			isAuth: true, 														// To indicate client that auth success
-// 			user: filteredUser
-// 		},
-// 	})
-// })

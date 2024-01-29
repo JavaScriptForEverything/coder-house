@@ -17,3 +17,7 @@ exports.generateTokens = async (payload) => {
 exports.storeRefreshToken = async (refreshToken, userId) => {
 	return await Token.create({ refreshToken, user: userId })
 }
+
+exports.verifyAccessToken = async (accessToken) => {
+	return jwt.verify(accessToken, JWT_ACCESS_TOKEN_SECRET)
+}

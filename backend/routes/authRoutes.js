@@ -1,12 +1,13 @@
 const { Router } = require('express')
-// const userController = require('../controllers/userController')
 const authController = require('../controllers/authController')
+// const userController = require('../controllers/userController')
 
-// /api
+// /api/auth
 const router = Router()
 
 router.post('/send-otp', authController.sendOTP)
 router.post('/verify-otp', authController.verifyOTP)
+router.post('/active-user', authController.auth, authController.activeUser)
 
 
 module.exports = router

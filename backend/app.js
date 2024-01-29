@@ -1,11 +1,14 @@
 const express = require('express')
 const cors = require('cors')
+const cookieParser = require('cookie-parser')
 const errorController = require('./controllers/errorController')
 
 const userRouter = require('./routes/userRoutes')
-const otherRouter = require('./routes/otherRoutes')
+const authRouter = require('./routes/authRoutes')
+const fileRouter = require('./routes/fileRoutes')
 
 const app = express()
+app.use(cookieParser())
 app.use(cors({ 
 	origin: ['http://localhost:3000'],
 	credentials: true, 			// if fetch(url, { ... credentials: 'include' })
@@ -13,7 +16,8 @@ app.use(cors({
 app.use(express.json()) 	// req.body json parse
 
 app.use('/api/users', userRouter)
-app.use('/api', otherRouter)
+app.use('/api/auth', authRouter)
+app.use('/upload/*', fileRouter)
 
 app.use(errorController.errorHandler)
 app.all('*', errorController.pageNotFound)

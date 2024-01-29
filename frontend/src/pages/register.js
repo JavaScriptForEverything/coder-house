@@ -2,13 +2,11 @@ import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 
 import withNavigation from '../components/shared/withNavigation'
-// import StepPhoneEmail from '../steps/stepPhoneEmail'
-import StepAvatar from '../steps/stepAvatar'
+import StepPhoneEmail from '../steps/stepPhoneEmail'
 import StepOTP from '../steps/stepOTP'
 
 const steps = {
-	// 1: StepPhoneEmail,
-	1: StepAvatar,
+	1: StepPhoneEmail,
 	2: StepOTP,
 }
 

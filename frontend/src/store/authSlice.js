@@ -13,8 +13,6 @@ const initialState = {
 	user: {
 		_id: '',
 		phone: '',
-		isAuth: false,
-		isActive: false,
 		name: '',
 		avatar: '',
 		createdAt: '',
@@ -50,7 +48,7 @@ const { reducer, actions } = createSlice({
 			loading: false,
 			error: '',
 
-			isAuth: action.payload.isAuth,
+			isAuth: !!action.payload.user,
 			user: {
 				...state.user,
 				...action.payload.user,
@@ -68,7 +66,7 @@ const { reducer, actions } = createSlice({
 			loading: false,
 			error: '',
 
-			isActive: action.payload.isActive,
+			isActive: action.payload.user.isActive,
 			user: {
 				...state.user,
 				...action.payload.user, 						// => return updated users too
@@ -85,7 +83,7 @@ export const getOtp = ({ onNext, phone }) => async (dispatch) => {
 		dispatch( actions.createRequest() )
 
 		const { data: res, error } = await axios({
-			url: '/api/send-otp',
+			url: '/api/auth/send-otp',
 			method: 'POST',
 			data: { phone }
 		})
@@ -110,7 +108,7 @@ export const verifyOtp = ({ onNext, phone, hash, otp }) => async (dispatch) => {
 		dispatch( actions.createRequest() )
 
 		const { data, error } = await axios({
-			url: '/api/verify-otp',
+			url: '/api/auth/verify-otp',
 			method: 'POST',
 			data: { 
 				phone,
@@ -121,8 +119,8 @@ export const verifyOtp = ({ onNext, phone, hash, otp }) => async (dispatch) => {
 
 		if(error) return dispatch( actions.setError({ error }) )
 
-		const { isAuth, user } = data.data
-		dispatch( actions.setAuth({ isAuth, user }) )
+		const { user } = data.data
+		dispatch( actions.setAuth({ user }) )
 
 		onNext() // send to nex step
 
@@ -140,22 +138,18 @@ export const activeUser = ({ onNext, avatar }) => async (dispatch, getState) => 
 	try {
 		dispatch( actions.createRequest() )
 
-		const { _id, name } = getState().auth.user
+		const { name } = getState().auth.user
 
 		const { data, error } = await axios({
-			url: '/api/active-user',
+			url: '/api/auth/active-user',
 			method: 'PATCH',
-			data: { 
-				avatar, 
-				userId: _id,
-				name
-			}
+			data: { name, avatar }
 		})
 
 		if(error) return dispatch( actions.setError({ error }) )
 
-		const { isActive, user } = data.data
-		dispatch( actions.setAuth({ isActive, user }) )
+		const { user } = data.data
+		dispatch( actions.setActive({ user }) )
 
 		onNext() // send to nex step
 

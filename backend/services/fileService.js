@@ -15,6 +15,8 @@ module.exports.handleBase64File = async (dataUrl, subDir='/users', fileType='ima
 	const baseDir = '/upload'
 	
 	try {
+		if( !dataUrl.startsWith('data') ) throw new Error('not valid dataUrl') 
+
 		const [ metadata, base64 ] = dataUrl.split(';base64,')
 		const mimetype = metadata.split(':').pop()
 		const [ type, ext] = mimetype.split('/')

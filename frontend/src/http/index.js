@@ -1,5 +1,5 @@
 
-const API_ORIGIN = process.env.REACT_APP_API_ORIGIN
+export const API_ORIGIN = process.env.REACT_APP_API_ORIGIN
 
 export const axios = async(option) => {
 	let output = {

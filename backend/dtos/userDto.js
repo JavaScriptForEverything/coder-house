@@ -28,5 +28,5 @@ const { filterObjectByArray } = require('../utils')
 */
 exports.filterUser = (user) => {
 	const allowedFields = ['_id', 'phone', 'isAuth', 'isActive', 'name', 'avatar', 'createdAt']
-	return filterObjectByArray(user._doc, allowedFields)
+	return filterObjectByArray(user, allowedFields)
 }

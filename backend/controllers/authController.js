@@ -115,12 +115,13 @@ exports.verifyOTP = catchAsync( async (req, res, next) => {
 		data: {
 			message: 'your registration is success',
 			isAuth: true, 														// To indicate client that auth success
-			user: userDto.filterUser(user)
+			// user
+			user: userDto.filterUser(user._doc)
 		},
 	})
 })
 
-// POST 	/api/auth/active-user + auth
+// PATCH 	/api/auth/active-user + auth
 exports.activeUser = catchAsync(async (req, res, next) => {
 	const { name, avatar } = req.body
 	if(!name || !avatar) return next(appError('missing fields: [name,avatar]'))
@@ -130,12 +131,12 @@ exports.activeUser = catchAsync(async (req, res, next) => {
 	const { error, url } = await fileService.handleBase64File(avatar)
 	if(error) return next(appError(error))
 
-	const user = userService.activeUser(userId, { name, avatar: url })
+	const user = await userService.activeUser(userId, { name, avatar: url, isActive: true })
 
 	res.status(201).json({
 		status: 'success', 
 		data: {
-			user: userDto.filterUser(user)
+			user: userDto.filterUser(user._doc)
 		}
 	})
 })

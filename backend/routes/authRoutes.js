@@ -7,7 +7,7 @@ const router = Router()
 
 router.post('/send-otp', authController.sendOTP)
 router.post('/verify-otp', authController.verifyOTP)
-router.post('/active-user', authController.auth, authController.activeUser)
+router.patch('/active-user', authController.auth, authController.activeUser)
 
 
 module.exports = router

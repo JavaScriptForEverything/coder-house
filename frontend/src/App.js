@@ -1,7 +1,7 @@
 import { Route, Routes, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import ProtectedRoutes from './components/protectedRoutes'
-import SemiProtectedRoutes from './components/semiProtectedRoutes'
+// import ProtectedRoutes from './components/protectedRoutes'
+// import SemiProtectedRoutes from './components/semiProtectedRoutes'
 
 import Home from './pages/home'
 import Register from './pages/register'
@@ -26,14 +26,17 @@ const App = () => {
 			<Route path='/login' element={<Login />} />
 			<Route path='/register' element={<Register />} />
 
+			<Route path='/authenticate' element={<Authenticate />} />
+			<Route path='/rooms' element={<Rooms />} />
 
-			<Route element={<ProtectedRoutes />}>
+
+			{/* <Route element={<ProtectedRoutes />}>
 				<Route path='/rooms' element={<Rooms />} />
 			</Route>
 
 			<Route element={<SemiProtectedRoutes />}>
 				<Route path='/authenticate' element={<Authenticate />} />
-			</Route>
+			</Route> */}
 
 		</Routes>
 	)

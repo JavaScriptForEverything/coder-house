@@ -1,5 +1,7 @@
 import { useLayoutEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { API_ORIGIN } from '../http'
 import * as authSlice from '../store/authSlice'
 
 import { RightArrowIcon } from '../icons'
@@ -8,13 +10,15 @@ import Card from '../components/cart'
 import logo from '../logo.png'
 
 const StepAvatar    = ({ onNext }) => {
+	const navigate = useNavigate()
 	const dispatch = useDispatch()
 	const { user } = useSelector( state => state.auth )
-	const [ avatar, setAvatar ] = useState(user.avatar || '')
+	const [ avatar, setAvatar ] = useState('')
 
 	useLayoutEffect(() => {
 		document.title = 'Authenticate Page | Avatar'
 	}, [])
+
 
 	const changeHandler = (evt) => {
 		const [file] = evt.target.files
@@ -27,9 +31,16 @@ const StepAvatar    = ({ onNext }) => {
 		})
 	}
 	const nextHandler = async () => {
+		if(user.isActive) return navigate('/rooms')
+
 		if( !avatar) return console.log('show alert missing data')
 
-		dispatch(authSlice.activeUser({ onNext, avatar, }))
+		dispatch(authSlice.activeUser({ 
+			onNext,  			// to 
+			avatar 
+		}))
+		setAvatar('')
+
 	}
 
 
@@ -44,9 +55,10 @@ const StepAvatar    = ({ onNext }) => {
 
 					<input id='avatar' type="file" accept='image/*' onChange={changeHandler} hidden/>
 					<label htmlFor="avatar" className='cursor-pointer'>
-						<img src={avatar || logo} alt='avatar' className='
-							w-20 h-20 rounded-full border-2 border-blue-500
-						' />
+
+						{/* <img src={`${API_ORIGIN}/${avatar}` || logo} alt='avatar' className=' w-20 h-20 rounded-full border-2 border-blue-500 ' /> */}
+						<img src={ avatar || `${API_ORIGIN}${user.avatar}` || logo} alt='avatar' className=' w-20 h-20 rounded-full border-2 border-blue-500 ' />
+
 					</label>
 
 					<Button onClick={nextHandler}> <span>Next</span> <RightArrowIcon /> </Button>

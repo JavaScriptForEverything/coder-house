@@ -1,13 +1,24 @@
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import ProtectedRoutes from './components/protectedRoutes'
+import SemiProtectedRoutes from './components/semiProtectedRoutes'
+
 import Home from './pages/home'
 import Register from './pages/register'
 import Authenticate from './pages/authenticate'
 import Login from './pages/login'
 import Rooms from './pages/rooms'
-import ProtectedRoutes from './components/protectedRoutes'
-import SemiProtectedRoutes from './components/semiProtectedRoutes'
+import { useLayoutEffect } from 'react'
 
 const App = () => {
+	const navigate = useNavigate()
+	const { isAuth, isActive } = useSelector(state => state.auth )
+
+	useLayoutEffect(() => {
+		if(isAuth && !isActive) return navigate('/authenticate')
+		if(isAuth && isActive) return navigate('/rooms')
+	}, [isAuth, isActive, navigate])
+
 
 	return (
 		<Routes>

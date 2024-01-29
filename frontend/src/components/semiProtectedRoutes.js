@@ -1,8 +1,9 @@
+import { useSelector } from 'react-redux'
 import { Outlet, Navigate } from 'react-router-dom'
 
 const SemiProtectedRoutes = () => {
-	const isActive = true
+	const { isAuth, isActive } = useSelector(state => state.auth)
 
-	return isActive ? <Outlet /> : Navigate({ to: '/register'  })
+	return isAuth && !isActive ? <Outlet /> : Navigate({ to: '/register'  })
 }
 export default SemiProtectedRoutes

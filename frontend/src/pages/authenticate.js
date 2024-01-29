@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import withNavigation from '../components/shared/withNavigation'
@@ -15,6 +15,10 @@ const Authenticate = () => {
 	const [ step, setStep ] = useState(1)
 
 	const Step = steps[step]
+
+	useEffect(() => {
+		document.title = 'Authenticate Page'
+	}, [])
 
 	const nextHandler = () => {
 		if(step >= 2) return navigate('/rooms')

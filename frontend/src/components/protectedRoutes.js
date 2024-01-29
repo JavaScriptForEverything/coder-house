@@ -1,8 +1,10 @@
+import { useSelector } from 'react-redux'
 import { Outlet, Navigate } from 'react-router-dom'
 
 const ProtectedRoutes = () => {
-	const isProtected = false
+	const { isAuth, isActive } = useSelector( state => state.auth )
+	console.log({ isAuth })
 
-	return isProtected ? <Outlet /> : Navigate({ to: '/'  })
+	return isAuth && isActive ? <Outlet /> : Navigate({ to: '/'  })
 }
 export default ProtectedRoutes

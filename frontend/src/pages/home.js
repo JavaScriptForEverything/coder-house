@@ -2,8 +2,13 @@ import { Link, useNavigate } from 'react-router-dom'
 import withNavigation from '../components/shared/withNavigation'
 import { useEffect } from 'react'
 
+
 const Home = () => {
 	const navigate = useNavigate()
+
+	useEffect(() => {
+		document.title = 'Home Page'
+	}, [])
 
 	useEffect(() => {
 		// navigate('/login')

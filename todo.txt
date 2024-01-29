@@ -14,3 +14,23 @@ Frontend:
 			/profile
 			/rooms
 			/rooms/1
+
+
+DTO = Data Transfer Object
+	- to modify any object before send to client.
+
+				doc = {
+					_id,
+					createdAt,
+					updatedAt,
+					_v,
+					id
+					...
+				}
+
+				dto = {
+					_id,
+					createdAt,
+					id
+					...
+				}

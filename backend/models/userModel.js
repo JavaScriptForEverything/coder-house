@@ -1,7 +1,6 @@
 const { Schema, models, model } = require('mongoose');
 
 const userSchema = new Schema({
-
 	phone: {
 		type: String,
 		unique: true,
@@ -12,6 +11,16 @@ const userSchema = new Schema({
 	isActive: {
 		type: Boolean,
 		default: false
+	},
+
+	name: {
+		type: String,
+		trim: true,
+		minlength: 3,
+		maxlength: 25
+	},
+	avatar: {
+		type: String
 	}
 
 }, { 

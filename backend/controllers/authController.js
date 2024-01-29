@@ -3,6 +3,7 @@ const otpService = require('../services/otpService')
 const hashService = require('../services/hashService')
 const userService = require('../services/userService')
 const tokenService = require('../services/tokenService')
+const { filterObjectByArray } = require('../utils')
 
 
 // POST 	/api/send-otp 
@@ -12,6 +13,7 @@ const tokenService = require('../services/tokenService')
 */
 exports.sendOTP = catchAsync( async(req, res, next) => {
 	const { phone } = req.body
+	if(!phone) return next(appError('you must send: `phone` property '))
 
 	// Step-1: 
 	const otp = await otpService.generateOTP()
@@ -72,23 +74,92 @@ exports.verifyOTP = catchAsync( async (req, res, next) => {
 
 	// step-4: Generate token
 	const payload = {
-		id: user.id,
+		_id: user._id,
 		phone: user.phone,
 		isActive: user.isActive,
 	}
 	const { accessToken, refreshToken } = await tokenService.generateTokens(payload)
 
-	// step-5: Send refreshToken with cookie
-	res.cookie('refreshToken', refreshToken, {
+
+	// step-5: 
+	const storedRefreshToken = await tokenService.storeRefreshToken(refreshToken, user._id)
+	if(!storedRefreshToken) return next(appError('string refreshToken failed'))
+
+	// step-6: Store both token into cookie which is HTTPS only : To prevent any XSS attach
+	res.cookie('accessToken', accessToken, {
 		maxAge: 1000 * 60 * 60 * 24 * 30, 				// expres require new Date(), but maxAge just value
 		httpOnly: true
 	})
+	res.cookie('refreshToken', refreshToken, {
+		maxAge: 1000 * 60 * 60 * 24 * 30,
+		httpOnly: true
+	})
+
+	const allowedFields = ['_id', 'phone', 'isAuth', 'isActive', 'name', 'avatar', 'createdAt']
+	const filteredUser = filterObjectByArray(user._doc, allowedFields)
 
 	res.status(200).json({
 		status: 'success',
 		data: {
 			message: 'your registration is success',
-			accessToken
+			isAuth: true, 														// To indicate client that auth success
+			user: filteredUser
 		},
 	})
 })
+
+
+// // PATCH 	/api/active-user
+// exports.activeUser = catchAsync( async (req, res, next) => {
+// 	const { name } = req.body
+
+// 	if(!name) return next(appError('you must send: { name }'))
+
+// 	// step-1: check expires
+// 	let user = await userService.findUser({ phone })
+
+// 	// const isValidHashed = expires > Date.now()
+// 	// if(!isValidHashed) return next(appError('your OTP expires, please collect new OTP'))
+
+// 	// // step-2: check hashed hash
+// 	// const data = `${phone}.${otp}.${expires}` 			// get the same pattern from send otp
+// 	// const isValid = await hashService.validateOTP(data, hashedOTP)
+// 	// if(!isValid) return next(appError('hashed otp violated'))
+
+// 	// // step-3: Create user
+
+// 	// // step-4: Generate token
+// 	// const payload = {
+// 	// 	_id: user._id,
+// 	// 	phone: user.phone,
+// 	// 	isActive: user.isActive,
+// 	// }
+// 	// const { accessToken, refreshToken } = await tokenService.generateTokens(payload)
+
+
+// 	// // step-5: 
+// 	// const storedRefreshToken = await tokenService.storeRefreshToken(refreshToken, user._id)
+// 	// if(!storedRefreshToken) return next(appError('string refreshToken failed'))
+
+// 	// // step-6: Store both token into cookie which is HTTPS only : To prevent any XSS attach
+// 	// res.cookie('accessToken', accessToken, {
+// 	// 	maxAge: 1000 * 60 * 60 * 24 * 30, 				// expres require new Date(), but maxAge just value
+// 	// 	httpOnly: true
+// 	// })
+// 	// res.cookie('refreshToken', refreshToken, {
+// 	// 	maxAge: 1000 * 60 * 60 * 24 * 30,
+// 	// 	httpOnly: true
+// 	// })
+
+// 	const allowedFields = ['_id', 'phone', 'isAuth', 'isActive', 'createdAt']
+// 	const filteredUser = filterObjectByArray(user._doc, allowedFields)
+
+// 	res.status(200).json({
+// 		status: 'success',
+// 		data: {
+// 			message: 'your registration is success',
+// 			isAuth: true, 														// To indicate client that auth success
+// 			user: filteredUser
+// 		},
+// 	})
+// })

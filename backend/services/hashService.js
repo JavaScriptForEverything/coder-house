@@ -3,7 +3,6 @@ const crypto = require('crypto')
 const otpSecret = process.env.OTP_SECRET
 
 exports.hashOTP = async (data) => {
-	console.log(data)
 	return crypto.createHmac('sha256', otpSecret).update(data).digest('base64')
 }
 

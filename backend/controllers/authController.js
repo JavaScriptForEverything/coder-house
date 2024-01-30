@@ -72,7 +72,7 @@ exports.verifyOTP = catchAsync( async (req, res, next) => {
 	const [ hashedOTP, expires ] = hash.split('.')
 
 	const isValidHashed = expires > Date.now()
-	if(!isValidHashed) return next(appError('your OTP expires, please collect new OTP'))
+	if(!isValidHashed) return next(appError('your OTP expires, please collect new OTP', 401, 'TokenError'))
 
 	// step-2: check hashed hash
 	const data = `${phone}.${otp}.${expires}` 			// get the same pattern from send otp
@@ -87,18 +87,21 @@ exports.verifyOTP = catchAsync( async (req, res, next) => {
 		if(!user) return next(appError('userCreate failed'))
 	}
 
+	const userId = user._id
+
 	// step-4: Generate token
-	const payload = {
-		_id: user._id,
-		phone: user.phone,
-		isActive: user.isActive,
-	}
+	const payload = { _id: userId, }
 	const { accessToken, refreshToken } = await tokenService.generateTokens(payload)
 
+	// step-5: store token into database
+	const token = await tokenService.findRefreshToken(userId)
+	if(token) {
+		tokenService.updateRefreshToken(refreshToken, userId)
+	} else {
+		const storedRefreshToken = await tokenService.storeRefreshToken(refreshToken, userId)
+		if(!storedRefreshToken) return next(appError('string refreshToken failed', 401, 'TokenError'))
+	}
 
-	// step-5: 
-	const storedRefreshToken = await tokenService.storeRefreshToken(refreshToken, user._id)
-	if(!storedRefreshToken) return next(appError('string refreshToken failed'))
 
 	// step-6: Store both token into cookie which is HTTPS only : To prevent any XSS attach
 	res.cookie('accessToken', accessToken, {
@@ -140,4 +143,24 @@ exports.activeUser = catchAsync(async (req, res, next) => {
 		}
 	})
 })
+
+
+// // POST 	/api/auth/refresh
+// exports.refreshAccessToken = catchAsync(async (req, res, next) => {
+// 	// if(error) return next(appError(error))
+
+// 	// Step-1: connect refreshToken from cookie
+// 	// Step-2: verify refreshToken exprires validatity
+// 	// Step-3: check refreshToken in database, because in logout time token also will be deleted
+// 	// Step-4: generate both tokens again
+// 	// Step-5: set both tokens into cookie again
+// 	// Step-6: response back
+
+// 	res.status(201).json({
+// 		status: 'success', 
+// 		data: {
+// 			// user: userDto.filterUser(user._doc)
+// 		}
+// 	})
+// })
 

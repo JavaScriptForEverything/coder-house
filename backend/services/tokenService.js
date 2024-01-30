@@ -18,6 +18,16 @@ exports.storeRefreshToken = async (refreshToken, userId) => {
 	return await Token.create({ refreshToken, user: userId })
 }
 
+exports.findRefreshToken = async (userId) => {
+	return Token.findOne({ user: userId })
+}
+exports.updateRefreshToken = async (refreshToken, userId) => {
+	return Token.findOneAndUpdate({ user: userId }, { refreshToken })
+}
+
 exports.verifyAccessToken = async (accessToken) => {
 	return jwt.verify(accessToken, JWT_ACCESS_TOKEN_SECRET)
+}
+exports.verifyRefreshToken = async (refreshToken) => {
+	return jwt.verify(refreshToken, JWT_REFRESH_TOKEN_SECRET)
 }

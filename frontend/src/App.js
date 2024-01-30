@@ -1,7 +1,7 @@
 import { Route, Routes, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import ProtectedRoutes from './components/protectedRoutes'
-import SemiProtectedRoutes from './components/semiProtectedRoutes'
+// import ProtectedRoutes from './components/protectedRoutes'
+// import SemiProtectedRoutes from './components/semiProtectedRoutes'
 
 import Home from './pages/home'
 import Register from './pages/register'

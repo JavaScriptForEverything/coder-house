@@ -1,7 +1,8 @@
-// import axios from 'axios'
+import axiosOrigin from 'axios'
 
 export const API_ORIGIN = process.env.REACT_APP_API_ORIGIN
 
+/*
 export const axios = async(option) => {
 	let output = {
 		data: {},
@@ -49,15 +50,16 @@ export const axios = async(option) => {
 
 	return output
 }
+*/
 
-// export const api = axios.create({
-// 	baseURL: API_ORIGIN,
-// 	headers: {
-// 		'Content-Type': 'application/json',
-// 		Accept: 'application/json'
-// 	},
-// 	withCredentials: true
-// })
+export const axios = axiosOrigin.create({
+	baseURL: API_ORIGIN,
+	headers: {
+		'Content-Type': 'application/json',
+		Accept: 'application/json'
+	},
+	withCredentials: true
+})
 
 
 

@@ -82,23 +82,17 @@ export const getOtp = ({ onNext, phone }) => async (dispatch) => {
 	try {
 		dispatch( actions.createRequest() )
 
-		const { data: res, error } = await axios({
-			url: '/api/auth/send-otp',
-			method: 'POST',
-			data: { phone }
-		})
-
-		if(error) return dispatch( actions.setError({ error: error.message }) )
+		const { data: { data } } = await axios.post('/api/auth/send-otp', { phone })
 		dispatch( actions.setOtp({ 
-			phone: res.data.phone, 
-			hash: res.data.hash 
-		}) )
+			phone: data.phone, 
+			hash: data.hash 
+		}))
 
 		onNext()
-		console.log({ message: res.data.message })
+		console.log({ message: data.message })
 
 	} catch (error) {
-		dispatch( actions.setError({ error: error.message }) )
+		dispatch( actions.setError({ error: error.response.data.message }) )
 	}
 }
 
@@ -107,25 +101,12 @@ export const verifyOtp = ({ onNext, phone, hash, otp }) => async (dispatch) => {
 	try {
 		dispatch( actions.createRequest() )
 
-		const { data, error } = await axios({
-			url: '/api/auth/verify-otp',
-			method: 'POST',
-			data: { 
-				phone,
-				hash,
-				otp,
-			}
-		})
-
-		if(error) return dispatch( actions.setError({ error }) )
-
-		const { user } = data.data
-		dispatch( actions.setAuth({ user }) )
-
-		// onNext() // send to nex step
+		const { data: { data } } = await axios.post('/api/auth/verify-otp', { phone, hash, otp })
+		dispatch( actions.setAuth({ user: data.user }) )
+		// onNext() // no need it because redirect via home page isAuth changes
 
 	} catch (error) {
-		dispatch( actions.setError({ error: error.message }) )
+		dispatch( actions.setError({ error: error.response.data.message }) )
 	}
 }
 
@@ -140,23 +121,15 @@ export const activeUser = ({ navigate, setAvatar, avatar }) => async (dispatch, 
 
 		const { name } = getState().auth.user
 
-		const { data, error } = await axios({
-			url: '/api/auth/active-user',
-			method: 'PATCH',
-			data: { name, avatar }
-		})
+		const { data: { data } } = await axios.patch('/api/auth/active-user', { name, avatar })
+		dispatch( actions.setActive({ user: data.user }) )
 
-		if(error) return dispatch( actions.setError({ error }) )
-
-		const { user } = data.data
-		dispatch( actions.setActive({ user }) )
-
-		setAvatar('')
-		navigate('/rooms')
+		// setAvatar('')
+		// navigate('/rooms')
 		// onNext() // send to nex step
 
 	} catch (error) {
-		dispatch( actions.setError({ error: error.message }) )
+		dispatch( actions.setError({ error: error.response.data.message }) )
 	}
 }
 

@@ -122,7 +122,7 @@ export const verifyOtp = ({ onNext, phone, hash, otp }) => async (dispatch) => {
 		const { user } = data.data
 		dispatch( actions.setAuth({ user }) )
 
-		onNext() // send to nex step
+		// onNext() // send to nex step
 
 	} catch (error) {
 		dispatch( actions.setError({ error: error.message }) )
@@ -134,7 +134,7 @@ export const addFullName = (name) => (dispatch) => {
 }
 
 // /src/steps/stepName.js : => /authenticate
-export const activeUser = ({ onNext, avatar }) => async (dispatch, getState) => {
+export const activeUser = ({ navigate, setAvatar, avatar }) => async (dispatch, getState) => {
 	try {
 		dispatch( actions.createRequest() )
 
@@ -151,7 +151,9 @@ export const activeUser = ({ onNext, avatar }) => async (dispatch, getState) => 
 		const { user } = data.data
 		dispatch( actions.setActive({ user }) )
 
-		onNext() // send to nex step
+		setAvatar('')
+		navigate('/rooms')
+		// onNext() // send to nex step
 
 	} catch (error) {
 		dispatch( actions.setError({ error: error.message }) )

@@ -18,11 +18,11 @@ const Authenticate = () => {
 
 	const Step = steps[step]
 
-	useLayoutEffect(() => {
-		if( !user.isAuth ) return navigate('/')
-		if( user.isAuth && user.isActive ) return navigate('/rooms')
+	// useLayoutEffect(() => {
+	// 	if( !user.isAuth ) return navigate('/')
+	// 	if( user.isAuth && user.isActive ) return navigate('/rooms')
 
-	}, [user.isAuth, user.isActive, navigate])
+	// }, [user.isAuth, user.isActive, navigate])
 
 	useEffect(() => {
 		if(user.name) return setStep(2)

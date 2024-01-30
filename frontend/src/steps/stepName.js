@@ -22,7 +22,7 @@ const StepName  = ({ onNext }) => {
 		if( !name ) return console.log('show alert missing data')
 
 		dispatch(authSlice.addFullName(name))
-		onNext()
+		// onNext()
 	}
 
 

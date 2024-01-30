@@ -1,3 +1,4 @@
+// import axios from 'axios'
 
 export const API_ORIGIN = process.env.REACT_APP_API_ORIGIN
 
@@ -49,17 +50,16 @@ export const axios = async(option) => {
 	return output
 }
 
+// export const api = axios.create({
+// 	baseURL: API_ORIGIN,
+// 	headers: {
+// 		'Content-Type': 'application/json',
+// 		Accept: 'application/json'
+// 	},
+// 	withCredentials: true
+// })
 
 
 
 
-export const sendOtp = async (obj) => {
-	const { data, error } = await axios({
-		url: '/api/send-otp',
-		method: 'POST',
-		data: obj,
-	})
 
-
-	return { data, error }
-}

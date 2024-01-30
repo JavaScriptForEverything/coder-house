@@ -31,15 +31,15 @@ const StepAvatar    = ({ onNext }) => {
 		})
 	}
 	const nextHandler = async () => {
-		if(user.isActive) return navigate('/rooms')
+		// if(!user.avatar.startsWith('data')) return navigate('/rooms')
 
 		if( !avatar) return console.log('show alert missing data')
 
 		dispatch(authSlice.activeUser({ 
-			onNext,  			// to 
+			navigate,
+			setAvatar,
 			avatar 
 		}))
-		setAvatar('')
 
 	}
 

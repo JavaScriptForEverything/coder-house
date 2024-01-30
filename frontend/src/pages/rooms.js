@@ -1,14 +1,28 @@
-import { useEffect, useRef } from 'react'
+import { useLayoutEffect, useRef } from 'react'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 
 
 const Rooms = () => {
+	const navigate = useNavigate()
+	const { isActive } = useSelector(state => state.auth)
+	
 	const videoRef = useRef()
 
-	useEffect(() => {
-		navigator.mediaDevices.getUserMedia({ video: true }).then( stream => {
-			videoRef.current.srcObject = stream 
-		})
+	useLayoutEffect(() => {
+		document.title = 'Rooms | '
 	}, [])
+
+	useLayoutEffect(() => {
+		if(!isActive) navigate('/')
+	}, [isActive, navigate])
+
+
+	// useEffect(() => {
+	// 	navigator.mediaDevices.getUserMedia({ video: true }).then( stream => {
+	// 		videoRef.current.srcObject = stream 
+	// 	})
+	// }, [])
 
 	return (
 		<>

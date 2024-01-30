@@ -16,21 +16,8 @@ Frontend:
 			/rooms/1
 
 
-DTO = Data Transfer Object
-	- to modify any object before send to client.
+backend:
+	. delete old image before upload new one
 
-				doc = {
-					_id,
-					createdAt,
-					updatedAt,
-					_v,
-					id
-					...
-				}
-
-				dto = {
-					_id,
-					createdAt,
-					id
-					...
-				}
+frontend:
+	. protected routes not working properly

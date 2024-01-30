@@ -8,15 +8,13 @@ const userDto = require('../dtos/userDto')
 
 exports.auth = catchAsync(async (req, res, next) => {
 	const { accessToken } = req.cookies
+	if(!accessToken) return next(appError('please login first', 404, 'TokenError'))
 
-	const token = await tokenService.verifyAccessToken(accessToken)
-	if(!token) return next(appError('accessToken verification failed', 401, 'TokenError'))
-	
-	const userId = token._id
-	const user = await userService.findUserById(userId)
-	if(!user) return next(appError('user not found', 401, 'TokenError'))
+	const { token, error } = await tokenService.verifyAccessToken(accessToken)
+	if(error) return next(appError('accessToken expires', 401, 'TokenError'))
 
-	req.user = user
+	console.log(token)
+	req.userId = token._id
 	
 	next()
 })
@@ -129,12 +127,12 @@ exports.activeUser = catchAsync(async (req, res, next) => {
 	const { name, avatar } = req.body
 	if(!name || !avatar) return next(appError('missing fields: [name,avatar]'))
 
-	const userId = req.user._id
-
 	const { error, url } = await fileService.handleBase64File(avatar)
 	if(error) return next(appError(error))
 
+	const userId = req.userId
 	const user = await userService.activeUser(userId, { name, avatar: url, isActive: true })
+	if(!user) return next(appError('update user failed'))
 
 	res.status(201).json({
 		status: 'success', 
@@ -143,24 +141,4 @@ exports.activeUser = catchAsync(async (req, res, next) => {
 		}
 	})
 })
-
-
-// // POST 	/api/auth/refresh
-// exports.refreshAccessToken = catchAsync(async (req, res, next) => {
-// 	// if(error) return next(appError(error))
-
-// 	// Step-1: connect refreshToken from cookie
-// 	// Step-2: verify refreshToken exprires validatity
-// 	// Step-3: check refreshToken in database, because in logout time token also will be deleted
-// 	// Step-4: generate both tokens again
-// 	// Step-5: set both tokens into cookie again
-// 	// Step-6: response back
-
-// 	res.status(201).json({
-// 		status: 'success', 
-// 		data: {
-// 			// user: userDto.filterUser(user._doc)
-// 		}
-// 	})
-// })
 

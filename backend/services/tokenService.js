@@ -8,7 +8,7 @@ const { JWT_ACCESS_TOKEN_SECRET, JWT_REFRESH_TOKEN_SECRET } = process.env
 */
 
 exports.generateTokens = async (payload) => {
-	const accessToken = jwt.sign(payload, JWT_ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
+	const accessToken = jwt.sign(payload, JWT_ACCESS_TOKEN_SECRET, { expiresIn: '1m' })
 	const refreshToken = jwt.sign(payload, JWT_REFRESH_TOKEN_SECRET, { expiresIn: '1y' })
 
 	return { accessToken, refreshToken }
@@ -26,8 +26,20 @@ exports.updateRefreshToken = async (refreshToken, userId) => {
 }
 
 exports.verifyAccessToken = async (accessToken) => {
-	return jwt.verify(accessToken, JWT_ACCESS_TOKEN_SECRET)
+	const tempObj = {}
+	try {
+		tempObj.token = jwt.verify(accessToken, JWT_ACCESS_TOKEN_SECRET)
+	} catch (error) {
+		tempObj.error = error.message
+	}
+	return tempObj
 }
 exports.verifyRefreshToken = async (refreshToken) => {
-	return jwt.verify(refreshToken, JWT_REFRESH_TOKEN_SECRET)
+	const tempObj = {}
+	try {
+		tempObj.token = jwt.verify(refreshToken, JWT_REFRESH_TOKEN_SECRET)
+	} catch (error) {
+		tempObj.error = error.message
+	}
+	return tempObj
 }

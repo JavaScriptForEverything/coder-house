@@ -9,23 +9,25 @@ exports.refreshToken = catchAsync(async (req, res, next) => {
 	if( !refreshTokenFromCookie ) return next(appError('plsease login ', 404, 'TokenError'))
 
 	// Step-2: verify Token
-	const token = await tokenService.verifyRefreshToken(refreshTokenFromCookie)
-	if(!token) return next(appError('refreshToken varification failed', 403, 'TokenError'))
+	const { token, error } = await tokenService.verifyRefreshToken(refreshTokenFromCookie)
+	if(error) return next(appError('refreshToken varification failed', 401, 'TokenError'))
 
-	// Step-3: verify refreshToken exprires validatity
-	const { _id: userId, exp } = token
-	if( exp * 1000 < Date.now() ) return next(appError('refreshToken expires', 401, 'TokenError'))
-	/* NB:
-			. exp in seconds not miliseconds
-			. if token date greater than current date, that means it is future date => still valid
-	 */ 
+	const userId = token._id
+
+	// // Step-3: verify refreshToken exprires validatity
+	// const { _id: userId, exp } = token
+	// if( exp * 1000 < Date.now() ) return next(appError('refreshToken expires', 401, 'TokenError'))
+	// /* NB:
+	// 		. exp in seconds not miliseconds
+	// 		. if token date greater than current date, that means it is future date => still valid
+	//  */ 
 
 	// Step-4: check refreshToken in database, because in logout time token also will be deleted
 	const findToken = tokenService.findRefreshToken(userId )
 	if( !findToken ) return next(appError('plsease login ', 400, 'TokenError'))
 
 	// Step-5: generate both tokens again
-	const { accessToken, refreshToken } = await tokenService.generateTokens({ userId })
+	const { accessToken, refreshToken } = await tokenService.generateTokens({ _id: userId })
 	if(!accessToken) return next(appError('token generation failed', 400, 'TokenError'))
 
 	// Step-6: set both tokens into cookie again

@@ -1,5 +1,5 @@
 import { Route, Routes, useNavigate } from 'react-router-dom'
-import { useEffect, useLayoutEffect } from 'react'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import * as authSlice from './store/authSlice'
 import ProtectedRoutes from './components/protectedRoutes'
@@ -10,11 +10,14 @@ import Register from './pages/register'
 import Authenticate from './pages/authenticate'
 import Login from './pages/login'
 import Rooms from './pages/rooms'
+import Loading from './components/loading'
+import Demo from './pages/demo'
 
 const App = () => {
 	const navigate = useNavigate()
 	const dispatch = useDispatch()
-	const { isAuth, user } = useSelector(state => state.auth )
+	const { loading, isAuth, user } = useSelector(state => state.auth )
+
 
 	useEffect(() => {
 		if(isAuth && user.isActive) return navigate('/rooms')
@@ -25,9 +28,10 @@ const App = () => {
 		dispatch(authSlice.loadDataOnPageRefresh())
 	}, [dispatch])
 
-	return (
+	return loading ? <Loading /> : (
 		<Routes>
 
+			<Route path='/demo' element={<Demo />} />
 			<Route path='/' element={<Home />} />
 
 			<Route path='/login' element={<Login />} />

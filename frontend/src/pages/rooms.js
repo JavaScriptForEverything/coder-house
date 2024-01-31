@@ -1,23 +1,17 @@
-import { useEffect, useLayoutEffect } from 'react'
+import { useLayoutEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
 import * as authSlice from '../store/authSlice'
+import withNavigation from '../components/shared/withNavigation'
 
 
 const Rooms = () => {
 	const dispatch = useDispatch()
 	const { user } = useSelector(state => state.auth)
 	
-	// const videoRef = useRef()
 
 	useLayoutEffect(() => {
 		document.title = 'Rooms | '
 	}, [])
-
-	// useEffect(() => {
-	// 	if(!user.isActive) navigate('/')
-	// }, [user.isActive, navigate])
-
 
 
 	const logoutHandler = () => {
@@ -40,5 +34,5 @@ const Rooms = () => {
 		</>
 	)
 }
-export default Rooms
+export default withNavigation(Rooms)
 

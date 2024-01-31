@@ -1,9 +1,15 @@
+import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
-import { Outlet, Navigate } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 
 const ProtectedRoutes = () => {
 	const { isAuth, user } = useSelector( state => state.auth )
+	const navigate = useNavigate()
 
-	return isAuth && user.isActive ? <Outlet /> : Navigate({ to: '/'  })
+	useEffect(() => {
+		if(!user.isActive) return navigate('/')
+	}, [user.isActive, navigate])
+
+	return isAuth && user.isActive && <Outlet /> 
 }
 export default ProtectedRoutes

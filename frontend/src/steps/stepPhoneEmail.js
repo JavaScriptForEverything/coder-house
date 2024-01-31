@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import * as authSlice from '../store/authSlice'
 
@@ -22,6 +22,7 @@ const StepPhoneEmail = ({ onNext }) => {
 
 	const nextHandler = async () => {
 		dispatch( authSlice.getOtp({ onNext, phone: mobileNumber }))
+		// onNext()
 	}
 
 	return (

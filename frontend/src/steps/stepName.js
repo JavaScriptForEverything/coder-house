@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import * as authSlice from '../store/authSlice'
 
@@ -15,6 +15,11 @@ const StepName  = ({ onNext }) => {
 		document.title = 'Authenticate Page | Full Name'
 	}, [])
 
+
+	// useEffect(() => {
+	// 	if(user.name) onNext()
+	// }, [user.name])
+
 	const changeHandler = (evt) => {
 		setName(evt.target.value)
 	}
@@ -22,7 +27,7 @@ const StepName  = ({ onNext }) => {
 		if( !name ) return console.log('show alert missing data')
 
 		dispatch(authSlice.addFullName(name))
-		// onNext()
+		onNext()
 	}
 
 

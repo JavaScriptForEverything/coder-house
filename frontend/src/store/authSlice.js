@@ -85,8 +85,6 @@ export default reducer
 // /src/steps/stepPhoneEmail.js : => /register
 export const getOtp = ({ onNext, phone }) => async (dispatch) => {
 	try {
-		dispatch( actions.createRequest() )
-
 		const { data: { data } } = await axios.post('/api/auth/send-otp', { phone })
 		dispatch( actions.setOtp({ 
 			phone: data.phone, 
@@ -102,13 +100,12 @@ export const getOtp = ({ onNext, phone }) => async (dispatch) => {
 }
 
 // /src/steps/stepOTP.js : => /register
-export const verifyOtp = ({ onNext, phone, hash, otp }) => async (dispatch) => {
+export const verifyOtp = ({ phone, hash, otp }) => async (dispatch) => {
 	try {
-		dispatch( actions.createRequest() )
+		// dispatch( actions.createRequest() )
 
 		const { data: { data } } = await axios.post('/api/auth/verify-otp', { phone, hash, otp })
 		dispatch( actions.setAuth({ user: data.user }) )
-		// onNext() // no need it because redirect via home page isAuth changes
 
 	} catch (error) {
 		dispatch( actions.setError({ error: error.response.data.message }) )

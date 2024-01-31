@@ -1,7 +1,16 @@
+import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { API_ORIGIN } from '../../http'
+import * as authSlice from '../../store/authSlice'
 
 const withNavigation = (Component) => {
 	const WithNavigation = () => {
+		const dispatch = useDispatch()
+		const { user } = useSelector(state => state.auth)
+
+		const logoutHandler = () => {
+			dispatch(authSlice.logout())
+		}
 
 		return (
 				<div className='container mx-auto bg-slate-100 h-screen flex flex-col'>
@@ -19,9 +28,12 @@ const withNavigation = (Component) => {
 						</div>
 
 						<div className='flex items-center gap-2 '>
-							<p>Riajul</p>
-							<img src='/logo.png' alt='logo' className='w-8 h-8' />
+							{ user.name && <p>{user.name}</p> }
+							{ user.avatar && <img src={API_ORIGIN + user.avatar} alt='logo' className='w-8 h-8 rounded-full' /> }
+							{ user.avatar && <Link onClick={logoutHandler} to='/' className='text-blue-500 '>Logout</Link> }
 						</div>
+
+
 					</div>
 
 					<Component />

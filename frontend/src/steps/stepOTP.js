@@ -1,19 +1,25 @@
-import { useLayoutEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import * as authSlice from '../store/authSlice'
 
 import { RightArrowIcon } from '../icons'
 import Button from '../components/button'
 import Card from '../components/cart'
+import { useNavigate } from 'react-router-dom'
 
 const StepOTP = ({ onNext }) => {
+	const navigate = useNavigate()
 	const dispatch = useDispatch()
-	const { otp: { phone, hash } } = useSelector( state => state.auth )
+	const { isAuth, otp: { phone, hash } } = useSelector( state => state.auth )
 	const [ otp, setOtp ] = useState(0)
 
 	useLayoutEffect(() => {
 		document.title = 'Register Page | OTP'
 	}, [])
+
+	useEffect(() => {
+		if(isAuth) navigate('/authenticate')
+	}, [isAuth, navigate])
 
 	const changeHandler = (evt) => {
 		setOtp(evt.target.value)
@@ -21,13 +27,7 @@ const StepOTP = ({ onNext }) => {
 	const nextHandler = async () => {
 		if( !phone || !hash || !otp ) return console.log('show alert missing data')
 
-		dispatch(authSlice.verifyOtp({
-			onNext,
-			phone,
-			hash,
-			otp
-		}))
-
+		dispatch(authSlice.verifyOtp({ phone, hash, otp }))
 	}
 
 

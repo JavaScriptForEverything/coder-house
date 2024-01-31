@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import * as authSlice from '../store/authSlice'
 

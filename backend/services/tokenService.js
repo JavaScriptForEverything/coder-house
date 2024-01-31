@@ -30,6 +30,7 @@ exports.verifyAccessToken = async (accessToken) => {
 	try {
 		tempObj.token = jwt.verify(accessToken, JWT_ACCESS_TOKEN_SECRET)
 	} catch (error) {
+		// if validation failed then if set statusCode 401, then axios.interceptors will fires
 		tempObj.error = error.message
 	}
 	return tempObj
@@ -42,4 +43,8 @@ exports.verifyRefreshToken = async (refreshToken) => {
 		tempObj.error = error.message
 	}
 	return tempObj
+}
+
+exports.deleteRefreshToken = async (userId) => {
+	return Token.deleteOne({ user: userId })
 }

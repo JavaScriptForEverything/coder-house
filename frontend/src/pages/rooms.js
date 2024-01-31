@@ -1,33 +1,42 @@
-import { useLayoutEffect, useRef } from 'react'
-import { useSelector } from 'react-redux'
+import { useEffect, useLayoutEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import * as authSlice from '../store/authSlice'
 
 
 const Rooms = () => {
-	const navigate = useNavigate()
-	const { isActive } = useSelector(state => state.auth)
+	const dispatch = useDispatch()
+	const { user } = useSelector(state => state.auth)
 	
-	const videoRef = useRef()
+	// const videoRef = useRef()
 
 	useLayoutEffect(() => {
 		document.title = 'Rooms | '
 	}, [])
 
-	useLayoutEffect(() => {
-		if(!isActive) navigate('/')
-	}, [isActive, navigate])
-
-
 	// useEffect(() => {
-	// 	navigator.mediaDevices.getUserMedia({ video: true }).then( stream => {
-	// 		videoRef.current.srcObject = stream 
-	// 	})
-	// }, [])
+	// 	if(!user.isActive) navigate('/')
+	// }, [user.isActive, navigate])
+
+
+
+	const logoutHandler = () => {
+		dispatch(authSlice.logout())
+	}
 
 	return (
 		<>
 			<p>Rooms page</p>
-			<video ref={videoRef} autoPlay></video>
+			<p>
+				<button onClick={logoutHandler} className='px-2 py-1.5 border border-red-500'>Logout</button>
+			</p>
+
+			<pre>
+				{JSON.stringify(user, null, 2)}
+			</pre>
+
+
+			{/* <video ref={videoRef} autoPlay></video> */}
 		</>
 	)
 }

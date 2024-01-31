@@ -142,3 +142,23 @@ exports.activeUser = catchAsync(async (req, res, next) => {
 	})
 })
 
+
+// Get 	/api/auth/logout + auth
+exports.logout = catchAsync(async (req, res, next) => {
+	const userId = req.userId
+	if(!userId) return next(appError('only logedIn user can logout'))
+
+	// Step-1: delete user's refreshToken by userId
+	const tokenDoc = await tokenService.deleteRefreshToken(userId)
+	if(!tokenDoc) return next(appError('delete refreshToken failed'))
+
+	// Step-2: remove cookies: accessToken, refreshToken
+	res.clearCookie('accessToken')
+	res.clearCookie('refreshToken')
+
+	res.status(201).json({
+		status: 'success', 
+		data: {
+		}
+	})
+})

@@ -20,4 +20,4 @@ backend:
 	. delete old image before upload new one
 
 frontend:
-	. protected routes not working properly
+	. Logout throw error protectedRoute

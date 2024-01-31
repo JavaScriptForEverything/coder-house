@@ -10,5 +10,6 @@ router.post('/verify-otp', authController.verifyOTP)
 router.patch('/active-user', authController.auth, authController.activeUser)
 
 router.get('/refresh-token', tokenController.refreshToken)
+router.get('/logout', authController.auth, authController.logout)
 
 module.exports = router

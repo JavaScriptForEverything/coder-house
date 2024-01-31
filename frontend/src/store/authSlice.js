@@ -1,11 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { axios } from '../http';
+import { API_ORIGIN } from '../http'
+import originalAxios from 'axios'
 
 const initialState = {
 	loading: false,
 	error: '',
 	isAuth: false,
-	isActive: false,
 	otp: {
 		phone: '',
 		hash: ''
@@ -16,6 +17,7 @@ const initialState = {
 		name: '',
 		avatar: '',
 		createdAt: '',
+		isActive: false
 	}
 }
 
@@ -61,17 +63,20 @@ const { reducer, actions } = createSlice({
 				name: action.payload
 			}
 		}),
-		setActive: (state, action) => ({				// => dispatch( actions.setOtp({ isActive, user }))
+		setActive: (state, action) => ({				// => dispatch( actions.setOtp({ user }))
 			...state,
 			loading: false,
 			error: '',
 
-			isActive: action.payload.user.isActive,
 			user: {
 				...state.user,
 				...action.payload.user, 						// => return updated users too
 			}
-		})
+		}),
+		setLogout: () => ({											// => dispatch( actions.setLogout())
+			...initialState
+		}),
+
 
 	}
 })
@@ -133,3 +138,33 @@ export const activeUser = ({ navigate, setAvatar, avatar }) => async (dispatch, 
 	}
 }
 
+
+// /App.js : => useEffect()
+export const loadDataOnPageRefresh = () => async (dispatch) => {
+	try {
+		dispatch( actions.createRequest() )
+
+		// because our axios used with interceptors: which auto-fire on every request, specially on 401 status code
+		const { data: { data } } = await originalAxios.get(`${API_ORIGIN}/api/auth/refresh-token`, {
+			withCredentials: true,  // required to get cookie from server as header
+		})
+		dispatch( actions.setAuth({ user: data.user }) )
+
+	} catch (error) {
+		dispatch( actions.setError({ error: error.response.data.message }) )
+	}
+}
+
+// /pages/rooms.js : => logoutHandler
+export const logout = () => async (dispatch) => {
+	try {
+		dispatch( actions.createRequest() )
+
+		const { data: { status } } = await axios.get(`/api/auth/logout` )
+		if(status !== 'success') throw new Error('logout failed')
+		dispatch( actions.setLogout() )
+
+	} catch (error) {
+		dispatch( actions.setError({ error: error.response.data.message }) )
+	}
+}

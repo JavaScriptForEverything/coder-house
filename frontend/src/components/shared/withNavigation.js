@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 
 const withNavigation = (Component) => {
-	return () => {
+	const WithNavigation = () => {
 
 		return (
 				<div className='container mx-auto bg-slate-100 h-screen flex flex-col'>
@@ -28,5 +28,7 @@ const withNavigation = (Component) => {
 				</div>
 			)
 	}
+
+	return WithNavigation
 }
 export default withNavigation

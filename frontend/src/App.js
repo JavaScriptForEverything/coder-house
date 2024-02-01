@@ -8,20 +8,23 @@ import SemiProtectedRoutes from './components/semiProtectedRoutes'
 import Home from './pages/home'
 import Register from './pages/register'
 import Authenticate from './pages/authenticate'
-import Login from './pages/login'
 import Rooms from './pages/rooms'
+import Room from './pages/room'
+
 import Loading from './components/loading'
 import Demo from './pages/demo'
 
 const App = () => {
 	const navigate = useNavigate()
 	const dispatch = useDispatch()
-	const { loading, isAuth, user } = useSelector(state => state.auth )
+	const { loading, user } = useSelector(state => state.auth )
 
 
 	useEffect(() => {
-		if(isAuth && user.isActive) return navigate('/rooms')
-	}, [isAuth, user.isActive, navigate])
+		if(user.isActive) return navigate('/rooms')
+
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [user.isActive])
 
 
 	useEffect(() => {
@@ -34,8 +37,8 @@ const App = () => {
 			<Route path='/demo' element={<Demo />} />
 			<Route path='/' element={<Home />} />
 
-			<Route path='/login' element={<Login />} />
 			<Route path='/register' element={<Register />} />
+
 
 			<Route element={<SemiProtectedRoutes />}>
 				<Route path='/authenticate' element={<Authenticate />} />
@@ -44,6 +47,10 @@ const App = () => {
 			<Route element={<ProtectedRoutes />}>
 				<Route path='/rooms' element={<Rooms />} />
 			</Route>
+
+				<Route path='/room/:id' element={<Room />} />
+
+			<Route path='/login' element={<Demo />} />
 
 
 		</Routes>

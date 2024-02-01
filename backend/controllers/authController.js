@@ -13,7 +13,6 @@ exports.auth = catchAsync(async (req, res, next) => {
 	const { token, error } = await tokenService.verifyAccessToken(accessToken)
 	if(error) return next(appError('accessToken expires', 401, 'TokenError'))
 
-	console.log(token)
 	req.userId = token._id
 	
 	next()
